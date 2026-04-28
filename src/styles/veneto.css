@@ -1,0 +1,295 @@
+/* Contenitore della mappa */
+.mappaContenitore{
+    width: 100%;
+    height: 800px;
+    position: relative;
+    z-index: 10;
+    border-radius: 15px;
+    overflow: hidden
+}
+
+.leafletContainer{
+    width: 100%;
+    height: 100%;
+    cursor: grab !important
+}
+
+
+/* popup errore poligono fuori dai confini */
+
+.banner-errore-poligono {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.banner-errore-contenuto {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background-color: #fee2e2;
+  border: 1px solid #ef4444;
+  color: #991b1b;
+  font-weight: 500;
+}
+
+.popup_errore_poligoni {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.banner-ok-btn{
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  background-color: #2563eb;
+  color: white;
+  font-weight: 600;
+}
+
+
+/* pannello pop-up dati particella selezionata */
+
+.layout-mappa-dettagli {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+.contenitore-mappa {
+  flex: 1;
+  min-width: 0;
+}
+
+.pannello-dettagli-destro {
+  width: 320px;
+  min-width: 320px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #d9e3ef;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  position: relative;
+}
+
+.chiudi-pannello-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+
+
+
+
+/*menu ricerca mappe e particelle*/
+.sideMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.menuSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menuSectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f1c3f;
+  margin: 0 0 6px 0;
+}
+
+.menuLabel {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #223b7a;
+}
+
+.menuInput {
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid #a9b8d8;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.menuInput:focus {
+  outline: none;
+  border-color: #3d8bfd;
+  box-shadow: 0 0 0 2px rgba(61, 139, 253, 0.15);
+}
+
+.menuSearchButton {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 6px 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(90deg, #39aef3, #2f6ff2);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.menuSearchButton:hover {
+  filter: brightness(0.97);
+}
+
+
+
+.menuInput:disabled {
+  background-color: #eef3f9;
+  color: #8b95a7;
+  cursor: not-allowed;
+}
+
+.menuSearchButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+.menuAutocomplete {
+  position: relative;
+}
+
+.menuDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid #a9b8d8;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  z-index: 20;
+}
+
+.menuDropdownItem {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  background: white;
+  border: none;
+  cursor: pointer;
+  font-size: 0.92rem;
+}
+
+.menuDropdownItem:hover {
+  background: #eef4ff;
+}
+
+
+/* popup poligoni disegnati */
+.elenco-particelle-orizzontale {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.badge-particella {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #e8f1ff;
+  border: 1px solid #b8d4ff;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f3f7a;
+}
+
+.testo-muted {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #667085;
+}
+
+
+
+
+
+/* btn popup particelle per dettaglio particella */
+
+
+.badge-particella-btn {
+  border: none;
+  cursor: pointer;
+}
+
+.badge-particella-btn:hover {
+  filter: brightness(0.92);
+}
+
+
+.pannello-dettagli-particella {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #d5e3f3;
+}
+
+
+
+
+/* dettagli di ogni punto della particella*/
+.pannello-rilevazioni-punto {
+  margin-top: 14px;
+}
+
+.rilevazione-card {
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid #d5e3f3;
+  border-radius: 8px;
+  background: #f8fbff;
+}
+
+
+.pannello-dettagli-destro {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+
+/*estensione popup vedi dettagli*/
+
+.layout-mappa-dettagli {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  width: 100%;
+}
+
+.layout-mappa-dettagli.layout-dettagli-esteso {
+  grid-template-columns: minmax(0, 1fr) minmax(520px, 42vw);
+}
+
+.pannello-dettagli-destro {
+  width: 100%;
+  max-height: 70vh;
+  overflow-y: auto;
+}

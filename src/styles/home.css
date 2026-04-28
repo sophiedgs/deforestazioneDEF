@@ -1,0 +1,118 @@
+/* stili della Home */
+.homeBackground{
+    min-height: 100vh;
+    background: linear-gradient(100deg, #dff4ff 0%, #8fcfff 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+.homeCard{
+    width: min(1750px, 100%);
+    min-height: 800px;
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.55);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-radius: 28px;
+    padding: 32px;
+    align-items: flex-start;
+    display: flex;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+    transition: all 0.3s ease;
+}
+
+
+.homeRight--expanded {
+  width: 100%;
+}
+
+
+.homeRight{
+    display: flex;
+    flex-direction: center;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-width: 0;
+    flex: 1;
+    transition: all 0.3s ease;
+}
+
+.homeLeft{
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    font-size: 22px;
+    width: 300px;
+    min-width: 300px;
+    flex-shrink: 0;
+}
+
+.homeTitle{
+    margin: 20;
+    font-size: 36px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #0f172a;
+    padding-left: 24px;
+}
+
+.homeSubtitle{
+    margin: 0;
+    font-size: 25px;
+    line-height: 1.5;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #1e3a8a;
+}
+
+/* Btn torna alla Home */
+.cercaCancella_selezione{
+    display: inline-block;
+    margin-top: 20px;
+    margin-left: 10px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    color: white;
+    border-radius: 12px;
+    border-color: #2563eb;
+    font-weight: 600;
+    font-family: Arial, Helvetica, sans-serif;
+    transition: all 0.2s ease;
+}
+
+
+/* stili cards item selezionati */
+.previewBox{
+    width: 100%;
+    min-height: 900px;
+    border-radius: 24px;
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(255,255,255,0.8);
+    padding: 32px;
+    font-size: 20px;
+    box-sizing: border-box;
+    box-shadow: insert 0 1px 0 rgba(255,255,255,0.6);
+}
+
+/* stile titolo e sottotitolo Home */
+*{
+    box-sizing: border-box;
+}
+
+body{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.homeCardMenuChiuso {
+  grid-template-columns: 1fr;
+}
+
+.homeCardMenuChiuso .homeRight,
+.homeCardMenuChiuso .previewBox {
+  width: 100%;
+  max-width: none;
+}
