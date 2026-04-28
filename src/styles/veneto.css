@@ -89,10 +89,6 @@
 }
 
 
-
-
-
-
 /*menu ricerca mappe e particelle*/
 .sideMenu {
   display: flex;
@@ -231,11 +227,7 @@
 
 
 
-
-
 /* btn popup particelle per dettaglio particella */
-
-
 .badge-particella-btn {
   border: none;
   cursor: pointer;
@@ -279,12 +271,16 @@
 
 .layout-mappa-dettagli {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
   width: 100%;
 }
 
-.layout-mappa-dettagli.layout-dettagli-esteso {
+.layout-mappa-dettagli:has(.pannello-dettagli-destro) {
+  grid-template-columns: minmax(0, 1fr) 320px;
+}
+
+.layout-mappa-dettagli.layout-dettagli-esteso:has(.pannello-dettagli-destro) {
   grid-template-columns: minmax(0, 1fr) minmax(520px, 42vw);
 }
 
