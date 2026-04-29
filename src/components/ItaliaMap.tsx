@@ -838,14 +838,6 @@ const caricaDatiParticella = useCallback(async () => {
                         ))}
                       </div>
                     )}
-
-
-
-
-
-
-
-
                     {/* {puntoSelezionato && (
                       <div className="pannello-rilevazioni-punto">
                         <button

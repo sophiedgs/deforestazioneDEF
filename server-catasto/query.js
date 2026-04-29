@@ -852,10 +852,152 @@ app.get('/api/identificatori_particelle_veneto', async (req, res) => {
 
 
 
+// app.get('/api/dati_particella/:particellaId', async (req, res) => {
+//   const particellaId = Number(req.params.particellaId);
+
+//   try {
+//     await pool.query(`
+//       INSERT INTO particella_punti (particella_id, pos_index, geom)
+//       WITH p AS (
+//         SELECT id_db AS particella_id, ST_Transform(geometry, 32632) AS geom_m
+//         FROM particelle_veneto_official
+//         WHERE id_db = $1
+//       ),
+//       punti AS (
+//         SELECT
+//           p.particella_id,
+//           ST_PointOnSurface(ST_Intersection(c.geom, p.geom_m)) AS geom_m
+//         FROM p
+//         CROSS JOIN LATERAL ST_SquareGrid(10, p.geom_m) AS c
+//         WHERE ST_Intersects(c.geom, p.geom_m)
+//       ),
+//       ordinati AS (
+//         SELECT
+//           particella_id,
+//           ROW_NUMBER() OVER (ORDER BY ST_Y(geom_m) DESC, ST_X(geom_m)) AS pos_index,
+//           geom_m
+//         FROM punti
+//       )
+//       SELECT particella_id, pos_index, geom_m
+//       FROM ordinati
+//       ON CONFLICT (particella_id, pos_index) DO NOTHING;
+//     `, [particellaId]);
+
+//     await pool.query(`
+//       INSERT INTO punto_rilevazioni
+//         (punto_id, rilevato_at, temperatura, image_path)
+//       SELECT
+//         pp.punto_id,
+//         timestamp '2025-01-01 00:00:00' + (gs.n || ' hours')::interval,
+//         ROUND((15 + random() * 20)::numeric, 2),
+//         '/images/punti/particella_' || pp.particella_id ||
+//         '_pos_' || pp.pos_index ||
+//         '_ts_' || gs.n || '.jpg'
+//       FROM particella_punti pp
+//       CROSS JOIN generate_series(1, 10) AS gs(n)
+//       WHERE pp.particella_id = $1
+//       ON CONFLICT (punto_id, rilevato_at) DO NOTHING;
+//     `, [particellaId]);
+
+//     const result = await pool.query(`
+//       SELECT jsonb_build_object(
+//         'type', 'FeatureCollection',
+//         'features', COALESCE(
+//           jsonb_agg(
+//             jsonb_build_object(
+//               'type', 'Feature',
+//               'geometry', ST_AsGeoJSON(ST_Transform(geom, 4326))::jsonb,
+//               'properties', jsonb_build_object(
+//                 'punto_id', punto_id,
+//                 'particella_id', particella_id,
+//                 'pos_index', pos_index
+//               )
+//             )
+//             ORDER BY pos_index
+//           ),
+//           '[]'::jsonb
+//         )
+//       ) AS geojson
+//       FROM particella_punti
+//       WHERE particella_id = $1;
+//     `, [particellaId]);
+
+//     res.json(result.rows[0].geojson);
+//   } catch (err) {
+//     console.error('Errore /api/dati_particella:', err);
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+
+app.get('/api/rilevazioni_punto/:puntoId', async (req, res) => {
+  const puntoId = Number(req.params.puntoId);
+
+  try {
+    const result = await pool.query(`
+      SELECT
+        rilevazione_id,
+        punto_id,
+        rilevato_at,
+        temperatura,
+        image_path
+      FROM punto_rilevazioni
+      WHERE punto_id = $1
+      ORDER BY rilevato_at DESC;
+    `, [puntoId]);
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Errore /api/rilevazioni_punto:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+
+
+
+const fs = require("node:fs");
+const path = require("node:path");
+
+const immaginiPuntiDir = path.join(__dirname, "../src/images/punti");
+
+function leggiImmaginiParticella(particellaId) {
+  if (!fs.existsSync(immaginiPuntiDir)) return [];
+
+  const regex = new RegExp(
+    String.raw`^particella_${particellaId}_pos_(\d+)_ts_(\d+)\.(jpg|jpeg|png)$`,
+    "i"
+  );
+
+  return fs.readdirSync(immaginiPuntiDir)
+    .map((file) => {
+      const match = new RegExp(regex).exec(file);
+      if (!match) return null;
+
+      return {
+        pos_index: Number(match[1]),
+        ts_index: Number(match[2]),
+        image_path: `/images/punti/${file}`,
+      };
+    })
+    .filter(Boolean);
+}
+
 app.get('/api/dati_particella/:particellaId', async (req, res) => {
   const particellaId = Number(req.params.particellaId);
 
   try {
+    const immagini = leggiImmaginiParticella(particellaId);
+
+    if (immagini.length === 0) {
+      return res.json({
+        type: 'FeatureCollection',
+        features: [],
+      });
+    }
+
     await pool.query(`
       INSERT INTO particella_punti (particella_id, pos_index, geom)
       WITH p AS (
@@ -888,16 +1030,22 @@ app.get('/api/dati_particella/:particellaId', async (req, res) => {
         (punto_id, rilevato_at, temperatura, image_path)
       SELECT
         pp.punto_id,
-        timestamp '2025-01-01 00:00:00' + (gs.n || ' hours')::interval,
-        ROUND((15 + random() * 20)::numeric, 2),
-        '/images/punti/particella_' || pp.particella_id ||
-        '_pos_' || pp.pos_index ||
-        '_ts_' || gs.n || '.jpg'
+        timestamp '2025-01-01 00:00:00' + (img.ts_index || ' hours')::interval,
+        NULL,
+        img.image_path
       FROM particella_punti pp
-      CROSS JOIN generate_series(1, 10) AS gs(n)
+      JOIN jsonb_to_recordset($2::jsonb) AS img(
+        pos_index int,
+        ts_index int,
+        image_path text
+      )
+        ON img.pos_index = pp.pos_index
       WHERE pp.particella_id = $1
-      ON CONFLICT (punto_id, rilevato_at) DO NOTHING;
-    `, [particellaId]);
+      ON CONFLICT (punto_id, rilevato_at) DO UPDATE
+      SET image_path = EXCLUDED.image_path;
+    `, [particellaId, JSON.stringify(immagini)]);
+
+    const posizioniConFoto = [...new Set(immagini.map((i) => i.pos_index))];
 
     const result = await pool.query(`
       SELECT jsonb_build_object(
@@ -919,8 +1067,9 @@ app.get('/api/dati_particella/:particellaId', async (req, res) => {
         )
       ) AS geojson
       FROM particella_punti
-      WHERE particella_id = $1;
-    `, [particellaId]);
+      WHERE particella_id = $1
+        AND pos_index = ANY($2::int[]);
+    `, [particellaId, posizioniConFoto]);
 
     res.json(result.rows[0].geojson);
   } catch (err) {
@@ -930,25 +1079,7 @@ app.get('/api/dati_particella/:particellaId', async (req, res) => {
 });
 
 
-app.get('/api/rilevazioni_punto/:puntoId', async (req, res) => {
-  const puntoId = Number(req.params.puntoId);
 
-  try {
-    const result = await pool.query(`
-      SELECT
-        rilevazione_id,
-        punto_id,
-        rilevato_at,
-        temperatura,
-        image_path
-      FROM punto_rilevazioni
-      WHERE punto_id = $1
-      ORDER BY rilevato_at DESC;
-    `, [puntoId]);
 
-    res.json(result.rows);
-  } catch (err) {
-    console.error('Errore /api/rilevazioni_punto:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
+
+
