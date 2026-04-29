@@ -41,6 +41,30 @@ function ItaliaMap({ricercaMappa, ricercaParticella, resetMappaCount, resetParti
   const [puntoSelezionato, setPuntoSelezionato] = useState<Record<string, unknown> | null>(null);
   const [rilevazioniPunto, setRilevazioniPunto] = useState<Array<Record<string, unknown>>>([]);
 
+  const [indiceFotoGalleria, setIndiceFotoGalleria] = useState(0);
+
+  const immaginiPunti = import.meta.glob("../images/punti/*.{jpg,jpeg,png}", {
+    eager: true,
+    query: "?url",
+    import: "default",
+  }) as Record<string, string>;
+
+  const normalizzaNomeFile = (path: unknown) => {
+    return String(path ?? "").split("/").pop() ?? "";
+  };
+
+  const getImageSrc = (path: unknown) => {
+    const nomeFile = normalizzaNomeFile(path);
+    const match = Object.entries(immaginiPunti).find(([key]) => key.endsWith(`/${nomeFile}`));
+    return match?.[1] ?? "";
+  };
+
+  const fotoGalleria = rilevazioniPunto.filter((r) => getImageSrc(r.image_path));
+  const fotoCorrente = fotoGalleria[indiceFotoGalleria] ?? null;
+
+
+
+
   const [error, setError] = useState<string | null>(null);
   const [errorePoligono, setErrorePoligono] = useState<string | null>(null);
   const [layerPoligonoNonValido, setLayerPoligonoNonValido] = useState<L.Layer | null>(null);
@@ -379,6 +403,7 @@ const caricaDatiParticella = useCallback(async () => {
 
     setPuntoSelezionato(punto);
     setRilevazioniPunto(data);
+    setIndiceFotoGalleria(0);
     onChiudiMenuRicerca?.();
   }, [onChiudiMenuRicerca]);
 
@@ -700,6 +725,9 @@ const caricaDatiParticella = useCallback(async () => {
                           onClick={() => {
                             resetDatiPunto();
                             onApriMenuRicerca?.();
+                            setPuntoSelezionato(null);
+                            setRilevazioniPunto([]);
+                            setIndiceFotoGalleria(0);
                           }}
                         >
                           Indietro
@@ -734,6 +762,98 @@ const caricaDatiParticella = useCallback(async () => {
                           onClick={() => {
                             setPuntoSelezionato(null);
                             setRilevazioniPunto([]);
+                            setIndiceFotoGalleria(0);
+                          }}
+                        >
+                          Indietro
+                        </button>
+
+                        <div className="testata-punto-galleria">
+                          <h4>Punto {String(puntoSelezionato.punto_id)}</h4>
+
+                          <div className="galleria-punto">
+                            {fotoCorrente ? (
+                              <>
+                                <img
+                                  src={getImageSrc(fotoCorrente.image_path)}
+                                  alt={`Foto punto ${String(puntoSelezionato.punto_id)}`}
+                                  className="galleria-punto-img"
+                                />
+
+                                <div className="galleria-timestamp">
+                                  {String(fotoCorrente.rilevato_at)}
+                                </div>
+
+                                <div className="galleria-controlli">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setIndiceFotoGalleria((prev) =>
+                                        prev === 0 ? fotoGalleria.length - 1 : prev - 1
+                                      )
+                                    }
+                                    disabled={fotoGalleria.length <= 1}
+                                  >
+                                    ‹
+                                  </button>
+
+                                  <span>
+                                    {indiceFotoGalleria + 1}/{fotoGalleria.length}
+                                  </span>
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setIndiceFotoGalleria((prev) =>
+                                        prev === fotoGalleria.length - 1 ? 0 : prev + 1
+                                      )
+                                    }
+                                    disabled={fotoGalleria.length <= 1}
+                                  >
+                                    ›
+                                  </button>
+                                </div>
+                              </>
+                            ) : (
+                              <div className="galleria-vuota">Nessuna foto</div>
+                            )}
+                          </div>
+                        </div>
+
+                        {rilevazioniPunto.map((r, index) => (
+                          <div key={String(r.rilevazione_id)} className="rilevazione-card">
+                            <p><strong>Timestamp:</strong> {String(r.rilevato_at)}</p>
+                            <p><strong>Temperatura:</strong> {String(r.temperatura)} °C</p>
+                            <p>
+                              <strong>Immagine:</strong>{" "}
+                              <button
+                                type="button"
+                                className="link-visualizza-foto"
+                                onClick={() => setIndiceFotoGalleria(index)}
+                              >
+                                visualizza foto
+                              </button>
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+
+
+
+
+
+
+
+                    {/* {puntoSelezionato && (
+                      <div className="pannello-rilevazioni-punto">
+                        <button
+                          type="button"
+                          className="cercaCancella_selezione"
+                          onClick={() => {
+                            setPuntoSelezionato(null);
+                            setRilevazioniPunto([]);
                           }}
                         >
                           Indietro
@@ -749,7 +869,7 @@ const caricaDatiParticella = useCallback(async () => {
                           </div>
                         ))}
                       </div>
-                    )}
+                    )} */}
                   </div>
                 )}
               </div>

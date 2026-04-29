@@ -54,12 +54,15 @@
 
 /* pannello pop-up dati particella selezionata */
 
-.layout-mappa-dettagli {
+/* .layout-mappa-dettagli {
   display: flex;
   align-items: flex-start;
   gap: 20px;
   width: 100%;
-}
+} */
+
+
+
 
 .contenitore-mappa {
   flex: 1;
@@ -260,13 +263,6 @@
   background: #f8fbff;
 }
 
-
-.pannello-dettagli-destro {
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
-
 /*estensione popup vedi dettagli*/
 
 .layout-mappa-dettagli {
@@ -288,4 +284,95 @@
   width: 100%;
   max-height: 70vh;
   overflow-y: auto;
+}
+
+
+
+
+
+/*gestione galleria immagini*/
+
+.testata-punto-galleria {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.galleria-punto {
+  width: 500px;
+  min-width: 500px;
+  height: 430px;
+  position: relative;
+  border: 1px solid #d5e3f3;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #eef3f9;
+}
+
+.galleria-punto-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.galleria-timestamp {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 28px;
+  padding: 4px 6px;
+  background: rgba(0, 0, 0, 0.45);
+  color: white;
+  font-size: 11px;
+  text-align: center;
+}
+
+.galleria-controlli {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 0 6px;
+  font-size: 12px;
+}
+
+.galleria-controlli button {
+  border: none;
+  background: #2563eb;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 24px;
+  height: 22px;
+}
+
+.galleria-controlli button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.galleria-vuota {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #667085;
+  font-size: 13px;
+}
+
+.link-visualizza-foto {
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
 }

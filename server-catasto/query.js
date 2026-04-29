@@ -890,7 +890,9 @@ app.get('/api/dati_particella/:particellaId', async (req, res) => {
         pp.punto_id,
         timestamp '2025-01-01 00:00:00' + (gs.n || ' hours')::interval,
         ROUND((15 + random() * 20)::numeric, 2),
-        '/images/punti/punto_' || pp.punto_id || '_' || gs.n || '.jpg'
+        '/images/punti/particella_' || pp.particella_id ||
+        '_pos_' || pp.pos_index ||
+        '_ts_' || gs.n || '.jpg'
       FROM particella_punti pp
       CROSS JOIN generate_series(1, 10) AS gs(n)
       WHERE pp.particella_id = $1
