@@ -21,8 +21,7 @@ function Home() {
           <div className="homeLeft">
             <HeaderHome title="Ricerca catastale" subtitle="Cerca mappe e particelle nel Veneto"
             />
-            <CatastoMenu  onSearchMappa={setRicercaMappa}
-              onSearchParticella={setRicercaParticella}
+            <CatastoMenu  onSearchMappa={setRicercaMappa} onSearchParticella={setRicercaParticella}
               onResetMappa={() => {
                 setRicercaMappa(null);
                 setResetMappaCount((v) => v + 1);

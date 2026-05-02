@@ -5,12 +5,8 @@ import L from "leaflet";
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 
+import type { PMCreateEvent, GeoJsonLayer, DrawFiguresProps} from "./Utils";
 
-import { type PMCreateEvent, type GeoJsonLayer, } from "./Utils";
-
-type DrawFiguresProps = {
-  onShapeCreated: (geojson: Feature, layer: L.Layer) => void;
-};
 
 function DrawFigures({ onShapeCreated }: DrawFiguresProps) {
   const map = useMap();

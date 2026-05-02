@@ -1,6 +1,45 @@
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import L from "leaflet";
 
+
+
+
+
+export type ItaliaMapProps = {
+  ricercaMappa: RicercaMappa | null;
+  ricercaParticella: RicercaParticella | null;
+  resetMappaCount: number;
+  resetParticellaCount: number;
+  menuRicercaVisibile: boolean;
+  onChiudiMenuRicerca?: () => void;
+  onApriMenuRicerca?: () => void;
+};
+
+
+export type ProvinciaItem = {
+  provincia: string;
+  sigla_provincia: string;
+};
+
+export type ComuneItem = {
+  comune: string;
+  provincia: string;
+  sigla_provincia: string;
+};
+
+export type CatastoMenuProps = {
+  onSearchMappa?: (payload: RicercaMappa) => void;
+  onSearchParticella?: (payload: RicercaParticella) => void;
+  onResetMappa?: () => void;
+  onResetParticella?: () => void;
+};
+
+
+
+export type DrawFiguresProps = {
+  onShapeCreated: (geojson: Feature, layer: L.Layer) => void;
+};
+
 export type GeoJsonLayer = L.Layer & {
       toGeoJSON: () => Feature;
     };

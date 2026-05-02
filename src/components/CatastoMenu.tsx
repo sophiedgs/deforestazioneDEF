@@ -2,35 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import "../styles/veneto.css";
 import "../styles/home.css";
 
-type ProvinciaItem = {
-  provincia: string;
-  sigla_provincia: string;
-};
+import type { ProvinciaItem, ComuneItem, CatastoMenuProps, } from "./Utils";
 
-type ComuneItem = {
-  comune: string;
-  provincia: string;
-  sigla_provincia: string;
-};
-
-type RicercaMappa = {
-  provincia: string;
-  comune: string;
-  identificatore: string;
-};
-
-type RicercaParticella = {
-  provincia: string;
-  comune: string;
-  particella: string;
-};
-
-type CatastoMenuProps = {
-  onSearchMappa?: (payload: RicercaMappa) => void;
-  onSearchParticella?: (payload: RicercaParticella) => void;
-  onResetMappa?: () => void;
-  onResetParticella?: () => void;
-};
 
 function CatastoMenu({ onSearchMappa, onSearchParticella, onResetMappa, onResetParticella,}: Readonly<CatastoMenuProps>) {
   const [provinceMappe, setProvinceMappe] = useState<ProvinciaItem[]>([]);
@@ -95,13 +68,8 @@ const [identificatoriParticelleFiltrati, setIdentificatoriParticelleFiltrati] = 
       }
 
       try {
-        const response = await fetch(
-          `http://localhost:3001/api/comuni_mappe_veneto?provincia=${encodeURIComponent(provinciaMappa)}`
-        );
-
-        if (!response.ok) {
-          throw new Error("Errore nel caricamento dei comuni mappe");
-        }
+        const response = await fetch(`http://localhost:3001/api/comuni_mappe_veneto?provincia=${encodeURIComponent(provinciaMappa)}` );
+        if (!response.ok) { throw new Error("Errore nel caricamento dei comuni mappe"); }
 
         const data: ComuneItem[] = await response.json();
         setComuniMappe(data);
@@ -122,13 +90,9 @@ const [identificatoriParticelleFiltrati, setIdentificatoriParticelleFiltrati] = 
       }
 
       try {
-        const response = await fetch(
-          `http://localhost:3001/api/comuni_particelle_veneto?provincia=${encodeURIComponent(provinciaParticella)}`
-        );
+        const response = await fetch(`http://localhost:3001/api/comuni_particelle_veneto?provincia=${encodeURIComponent(provinciaParticella)}`);
 
-        if (!response.ok) {
-          throw new Error("Errore nel caricamento dei comuni particelle");
-        }
+        if (!response.ok) { throw new Error("Errore nel caricamento dei comuni particelle"); }
 
         const data: ComuneItem[] = await response.json();
         setComuniParticelle(data);
@@ -149,9 +113,7 @@ useEffect(() => {
       if (provinciaMappa.trim()) params.append("provincia", provinciaMappa);
       if (comuneMappa.trim()) params.append("comune", comuneMappa);
 
-      const res = await fetch(
-        `http://localhost:3001/api/identificatori_mappe_veneto?${params.toString()}`
-      );
+      const res = await fetch(`http://localhost:3001/api/identificatori_mappe_veneto?${params.toString()}`);
 
       if (!res.ok) return;
 
@@ -180,9 +142,7 @@ useEffect(() => {
         params.append("comune", comuneParticella);
       }
 
-      const res = await fetch(
-        `http://localhost:3001/api/identificatori_particelle_veneto?${params.toString()}`
-      );
+      const res = await fetch(`http://localhost:3001/api/identificatori_particelle_veneto?${params.toString()}`);
 
       if (!res.ok) return;
 
@@ -299,16 +259,13 @@ useEffect(() => {
         </label>
         <div className="menuAutocomplete">
           <input id="comune-mappa" className="menuInput"
-            placeholder={ provinciaMappa ? "Seleziona o scrivi un comune" : "Seleziona prima una provincia"
-            }
+            placeholder={ provinciaMappa ? "Seleziona o scrivi un comune" : "Seleziona prima una provincia"}
             value={comuneMappa}
             onChange={(e) => {
               setComuneMappa(e.target.value);
               setShowComuniMappe(true);
             }}
-            onFocus={() => {
-              if (provinciaMappa.trim()) setShowComuniMappe(true);
-            }}
+            onFocus={() => {if (provinciaMappa.trim()) setShowComuniMappe(true); }}
             disabled={!provinciaMappa.trim()}
           />
           {showComuniMappe && comuniMappeFiltrati.length > 0 && (
@@ -331,15 +288,10 @@ useEffect(() => {
           Identificatore mappa
         </label>
 
-        <input
-          id="identificatore-mappa"
-          className="menuInput"
-          type="text"
-          list="identificatori-mappa-list"
-          value={identificatoreMappa}
+        <input id="identificatore-mappa" className="menuInput" type="text"
+          list="identificatori-mappa-list" value={identificatoreMappa}
           onChange={(e) => setIdentificatoreMappa(e.target.value)}
-          placeholder="Seleziona o scrivi un identificatore"
-          disabled={!provinciaMappa.trim()}
+          placeholder="Seleziona o scrivi un identificatore" disabled={!provinciaMappa.trim()}
         />
 
         <datalist id="identificatori-mappa-list">
@@ -348,20 +300,11 @@ useEffect(() => {
           ))}
         </datalist>
          <div className="menuButtonRow">
-          <button
-            type="button"
-            className="cercaCancella_selezione"
-            onClick={handleCercaMappa}
-            disabled={!provinciaMappa.trim()}
-          >
+          <button type="button" className="cercaCancella_selezione" onClick={handleCercaMappa} disabled={!provinciaMappa.trim()}>
             Cerca mappa
           </button>
 
-          <button
-            type="button"
-            className="cercaCancella_selezione"
-            onClick={handleResetMappa}
-          >
+          <button type="button" className="cercaCancella_selezione" onClick={handleResetMappa} >
             Cancella
           </button>
         </div>
@@ -374,11 +317,8 @@ useEffect(() => {
           Provincia
         </label>
         <div className="menuAutocomplete">
-          <input
-            id="provincia-particella"
-            className="menuInput"
-            placeholder="Seleziona o scrivi una provincia"
-            value={provinciaParticella}
+          <input id="provincia-particella" className="menuInput"
+            placeholder="Seleziona o scrivi una provincia"  value={provinciaParticella}
             onChange={(e) => {
               setProvinciaParticella(e.target.value);
               setComuneParticella("");
@@ -389,10 +329,7 @@ useEffect(() => {
           {showProvinceParticelle && provinceParticelleFiltrate.length > 0 && (
             <div className="menuDropdown">
               {provinceParticelleFiltrate.map((item) => (
-                <button
-                  key={item.provincia}
-                  type="button"
-                  className="menuDropdownItem"
+                <button key={item.provincia} type="button" className="menuDropdownItem"
                   onMouseDown={() => {
                     setProvinciaParticella(item.provincia);
                     setComuneParticella("");
@@ -410,31 +347,20 @@ useEffect(() => {
           Comune
         </label>
         <div className="menuAutocomplete">
-          <input
-            id="comune-particella"
-            className="menuInput"
-            placeholder={
-              provinciaParticella
-                ? "Seleziona o scrivi un comune"
-                : "Seleziona prima una provincia"
-            }
+          <input id="comune-particella" className="menuInput"
+            placeholder={ provinciaParticella ? "Seleziona o scrivi un comune" : "Seleziona prima una provincia" }
             value={comuneParticella}
             onChange={(e) => {
               setComuneParticella(e.target.value);
               setShowComuniParticelle(true);
             }}
-            onFocus={() => {
-              if (provinciaParticella.trim()) setShowComuniParticelle(true);
-            }}
+            onFocus={() => { if (provinciaParticella.trim()) setShowComuniParticelle(true); }}
             disabled={!provinciaParticella.trim()}
           />
           {showComuniParticelle && comuniParticelleFiltrati.length > 0 && (
             <div className="menuDropdown">
               {comuniParticelleFiltrati.map((item) => (
-                <button
-                  key={`${item.provincia}-${item.comune}`}
-                  type="button"
-                  className="menuDropdownItem"
+                <button key={`${item.provincia}-${item.comune}`} type="button" className="menuDropdownItem"
                   onMouseDown={() => {
                     setComuneParticella(item.comune);
                     setShowComuniParticelle(false);
@@ -450,21 +376,11 @@ useEffect(() => {
           Particella
         </label>
 
-        <input
-          id="particella"
-          className="menuInput"
-          type="text"
-          list="identificatori-particelle-list"
-          placeholder={
-            provinciaParticella.trim()
-              ? comuneParticella.trim()
-                ? "Seleziona o scrivi una particella"
-                : "Puoi già selezionare una particella della provincia"
-              : "Seleziona prima una provincia"
+        <input id="particella" className="menuInput" type="text" list="identificatori-particelle-list"
+          placeholder={provinciaParticella.trim() ? comuneParticella.trim()
+                ? "Seleziona o scrivi una particella" : "Puoi già selezionare una particella della provincia" : "Seleziona prima una provincia"
           }
-          value={particella}
-          onChange={(e) => setParticella(e.target.value)}
-          disabled={!provinciaParticella.trim()}
+          value={particella} onChange={(e) => setParticella(e.target.value)} disabled={!provinciaParticella.trim()}
         />
 
         <datalist id="identificatori-particelle-list">
@@ -474,20 +390,12 @@ useEffect(() => {
         </datalist>
 
         <div className="menuButtonRow">
-          <button
-            type="button"
-            className="cercaCancella_selezione"
-            onClick={handleCercaParticella}
-            disabled={!provinciaParticella.trim()}
-          >
+          <button type="button" className="cercaCancella_selezione"
+            onClick={handleCercaParticella} disabled={!provinciaParticella.trim()} >
             Cerca particella
           </button>
 
-          <button
-            type="button"
-            className="cercaCancella_selezione"
-            onClick={handleResetParticella}
-          >
+          <button type="button" className="cercaCancella_selezione" onClick={handleResetParticella} >
             Cancella
           </button>
         </div>
