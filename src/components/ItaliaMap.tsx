@@ -7,9 +7,9 @@ import "../styles/veneto.css";
 import DrawFigures from "./DrawFigures";
 import MapBoundsLoader from "./ZoomControl";
 
-import type { GeoJsonData, BoundsPayload } from "./Utils";
-import {position, venetoStyle, mappaStyle, particelleStyle, buildParams,} from "./Utils";
-import type { RicercaMappa, RicercaParticella } from "../pages/Home";
+import { position, venetoStyle, mappaStyle, particelleStyle, buildParams, } from "./Utils";
+import type { GeoJsonData, BoundsPayload, RicercaMappa, RicercaParticella,} from "./Utils";
+
 
 type ItaliaMapProps = {
   ricercaMappa: RicercaMappa | null;
@@ -838,30 +838,6 @@ const caricaDatiParticella = useCallback(async () => {
                         ))}
                       </div>
                     )}
-                    {/* {puntoSelezionato && (
-                      <div className="pannello-rilevazioni-punto">
-                        <button
-                          type="button"
-                          className="cercaCancella_selezione"
-                          onClick={() => {
-                            setPuntoSelezionato(null);
-                            setRilevazioniPunto([]);
-                          }}
-                        >
-                          Indietro
-                        </button>
-
-                        <h4>Punto {String(puntoSelezionato.punto_id)}</h4>
-
-                        {rilevazioniPunto.map((r) => (
-                          <div key={String(r.rilevazione_id)} className="rilevazione-card">
-                            <p><strong>Timestamp:</strong> {String(r.rilevato_at)}</p>
-                            <p><strong>Temperatura:</strong> {String(r.temperatura)} °C</p>
-                            <p><strong>Immagine:</strong> {String(r.image_path)}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )} */}
                   </div>
                 )}
               </div>

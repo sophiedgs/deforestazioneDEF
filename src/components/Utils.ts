@@ -1,6 +1,26 @@
-import type { FeatureCollection, Geometry } from "geojson";
+import type { Feature, FeatureCollection, Geometry } from "geojson";
 import L from "leaflet";
 
+export type GeoJsonLayer = L.Layer & {
+      toGeoJSON: () => Feature;
+    };
+
+export type PMCreateEvent = {
+      layer: L.Layer;
+      shape: string;
+    };
+
+export type RicercaMappa = {
+  provincia: string;
+  comune: string;
+  identificatore: string;
+};
+
+export type RicercaParticella = {
+  provincia: string;
+  comune: string;
+  particella: string;
+};
 export interface GeoJsonProprieta {
   [x: string]: any;
   nome?: string;

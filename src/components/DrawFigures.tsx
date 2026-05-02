@@ -1,9 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
 import type { Feature } from "geojson";
 import L from "leaflet";
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+
+
+import { type PMCreateEvent, type GeoJsonLayer, } from "./Utils";
 
 type DrawFiguresProps = {
   onShapeCreated: (geojson: Feature, layer: L.Layer) => void;
@@ -11,6 +14,7 @@ type DrawFiguresProps = {
 
 function DrawFigures({ onShapeCreated }: DrawFiguresProps) {
   const map = useMap();
+  const drawnLayerRef = useRef<L.Layer | null>(null);
 
   useEffect(() => {
     if (!map) return;
@@ -42,87 +46,84 @@ function DrawFigures({ onShapeCreated }: DrawFiguresProps) {
       allowSelfIntersection: false,
     });
 
+    function circleToPolygon(layer: L.Circle, steps = 96): Feature {
+      const center = layer.getLatLng();
+      const radius = layer.getRadius();
+      const coords: [number, number][] = [];
+      const earthRadius = 6378137;
 
-function circleToPolygon(layer: L.Circle, steps = 96): Feature {
-  const center = layer.getLatLng();
-  const radius = layer.getRadius();
-  const coords: [number, number][] = [];
+      for (let i = 0; i <= steps; i++) {
+        const angle = (i / steps) * 2 * Math.PI;
 
-  const earthRadius = 6378137;
+        const lat1 = (center.lat * Math.PI) / 180;
+        const lng1 = (center.lng * Math.PI) / 180;
 
-  for (let i = 0; i <= steps; i++) {
-    const angle = (i / steps) * 2 * Math.PI;
+        const lat2 = Math.asin(
+          Math.sin(lat1) * Math.cos(radius / earthRadius) +
+            Math.cos(lat1) * Math.sin(radius / earthRadius) * Math.cos(angle)
+        );
 
-    const lat1 = (center.lat * Math.PI) / 180;
-    const lng1 = (center.lng * Math.PI) / 180;
+        const lng2 = lng1 + Math.atan2(
+           Math.sin(angle) * Math.sin(radius / earthRadius) * Math.cos(lat1),
+            Math.cos(radius / earthRadius) - Math.sin(lat1) * Math.sin(lat2)
+          );
 
-    const lat2 = Math.asin(
-      Math.sin(lat1) * Math.cos(radius / earthRadius) +
-      Math.cos(lat1) * Math.sin(radius / earthRadius) * Math.cos(angle)
-    );
+        coords.push([(lng2 * 180) / Math.PI, (lat2 * 180) / Math.PI]);
+      }
 
-    const lng2 =
-      lng1 +
-      Math.atan2(
-        Math.sin(angle) * Math.sin(radius / earthRadius) * Math.cos(lat1),
-        Math.cos(radius / earthRadius) - Math.sin(lat1) * Math.sin(lat2)
-      );
+      return {
+        type: "Feature",
+        geometry: {
+          type: "Polygon",
+          coordinates: [coords],
+        },
+        properties: {
+          shapeType: "Circle",
+          radius,
+        },
+      };
+    }
 
-    coords.push([
-      (lng2 * 180) / Math.PI,
-      (lat2 * 180) / Math.PI,
-    ]);
-  }
+    
 
-  return {
-    type: "Feature",
-    geometry: {
-      type: "Polygon",
-      coordinates: [coords],
-    },
-    properties: {
-      shapeType: "Circle",
-      radius,
-    },
-  };
-}
+    const handleCreate = (e: PMCreateEvent) => {
+      const { layer, shape } = e;
 
-type GeoJsonLayer = L.Layer & {
-  toGeoJSON: () => Feature;
-};
+      if (drawnLayerRef.current) {
+        drawnLayerRef.current.remove();
+      }
 
-type PMCreateEvent = {
-  layer: L.Layer;
-  shape: string;
-};
+      drawnLayerRef.current = layer;
 
-const handleCreate = (e: PMCreateEvent) => {
-  const { layer, shape } = e;
+      let feature: Feature;
 
-  let feature: Feature;
+      if (shape === "Circle" && layer instanceof L.Circle) {
+        feature = circleToPolygon(layer);
+      } else {
+        const data = (layer as GeoJsonLayer).toGeoJSON();
 
-  if (shape === "Circle" && layer instanceof L.Circle) {
-    feature = circleToPolygon(layer);
-  } else {
-    const data = (layer as GeoJsonLayer).toGeoJSON();
+        feature = {
+          ...data,
+          properties: {
+            ...data.properties,
+            shapeType: shape,
+          },
+        };
+      }
 
-    feature = {
-      ...data,
-      properties: {
-        ...(data.properties),
-        shapeType: shape,
-      },
+      console.log("Dati della forma:", feature);
+
+      onShapeCreated(feature, layer);
     };
-  }
-
-  console.log("Dati della forma:", feature);
-
-  onShapeCreated(feature, layer);
-};
 
     map.on("pm:create", handleCreate);
 
     return () => {
+      if (drawnLayerRef.current) {
+        drawnLayerRef.current.remove();
+        drawnLayerRef.current = null;
+      }
+
       map.pm.removeControls();
       map.off("pm:create", handleCreate);
     };

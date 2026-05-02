@@ -3,18 +3,7 @@ import HeaderHome from "../components/HeaderHome";
 import CatastoMenu from "../components/CatastoMenu";
 import ItaliaMap from "../components/ItaliaMap";
 import "../styles/home.css";
-
-export type RicercaMappa = {
-  provincia: string;
-  comune: string;
-  identificatore: string;
-};
-
-export type RicercaParticella = {
-  provincia: string;
-  comune: string;
-  particella: string;
-};
+import type { RicercaMappa, RicercaParticella } from "../components/Utils";
 
 
 function Home() {
@@ -30,13 +19,9 @@ function Home() {
       <section className={`homeCard ${menuRicercaVisibile ? "" : "homeCardMenuChiuso"}`}>
         {menuRicercaVisibile && (
           <div className="homeLeft">
-            <HeaderHome
-              title="Ricerca catastale"
-              subtitle="Cerca mappe e particelle nel Veneto"
+            <HeaderHome title="Ricerca catastale" subtitle="Cerca mappe e particelle nel Veneto"
             />
-
-            <CatastoMenu
-              onSearchMappa={setRicercaMappa}
+            <CatastoMenu  onSearchMappa={setRicercaMappa}
               onSearchParticella={setRicercaParticella}
               onResetMappa={() => {
                 setRicercaMappa(null);
